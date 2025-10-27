@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday 🎂</title>
+  <style>
+    :root{
+      --bg1:#0f0b12; --glow1:#ff9fc2; --accent:#ff6fa3;
+      --card:#fff8fb;
+      --txt:#2b1220;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;font-family:Inter, "Segoe UI", Roboto, Arial; background:linear-gradient(180deg,#0b0710,#160616); color:white; overflow:hidden;}
+    .stage{position:relative;width:100%;height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;}
+    .scene{
+      width:min(1100px,96%);height:min(720px,86%);background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      border-radius:20px;backdrop-filter: blur(6px);box-shadow: 0 30px 90px rgba(0,0,0,0.5);position:relative;overflow:hidden;padding:28px;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    }
+
+    /* animated greeting */
+    .greeting{
+      font-size:48px;font-weight:900;text-align:center;line-height:1;letter-spacing:0.6px;
+      color: white; text-shadow: 0 6px 24px rgba(255,110,150,0.22);
+      transform-origin:center;
+      animation: popIn 900ms cubic-bezier(.2,.9,.2,1);
+    }
+    .sub{
+      color:#ffcfe0;margin-top:6px;font-size:16px;font-weight:700; opacity:.95;
+      transform-origin:center;
+      animation: floaty 2200ms ease-in-out infinite;
+    }
+
+    @keyframes popIn{ 0%{ transform: scale(.6) translateY(12px); opacity:0 } 60%{ transform: scale(1.05) translateY(-6px); opacity:1 } 100%{ transform: scale(1) translateY(0) } }
+    @keyframes floaty{ 0%{ transform: translateY(0) } 50%{ transform: translateY(-10px) } 100%{ transform: translateY(0) } }
+
+    .click-area{margin-top:8px}
+    .reveal-btn{
+      background: linear-gradient(135deg, #ffd1e3, #ff93bf); color:#4b0822;border:none;padding:12px 18px;border-radius:12px;font-weight:900;font-size:16px;
+      box-shadow: 0 12px 34px rgba(255,90,140,0.14); cursor:pointer; transition:transform .14s;
+    }
+    .reveal-btn:active{ transform:translateY(2px) }
+
+    /* video container hidden until reveal */
+    .videoWrap{width:100%;max-width:860px;border-radius:14px;overflow:hidden;margin-top:12px;display:none;align-items:center;justify-content:center}
+    video{width:100%;max-height:480px;background:#000;display:block}
+
+    /* cute animated background elements (floating hearts, orbs) */
+    .orb{ position:absolute;border-radius:50%;filter:blur(40px);opacity:0.12; pointer-events:none}
+    .orb.a{width:420px;height:420px;left:-120px;top:-60px;background: radial-gradient(circle,#ff95c0,#ffcfe0)}
+    .orb.b{width:300px;height:300px;right:-120px;bottom:-90px;background: radial-gradient(circle,#ffd1f0,#ffb3da)}
+    .spark{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#ffd8e6,#ff6fa3);filter:blur(.6px);opacity:.9}
+
+    .confetti-canvas{position:absolute;inset:0;pointer-events:none;z-index:30}
+
+    .message-box{
+      position:absolute;left:20px;bottom:20px;color:#ffdff0;background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.02));
+      padding:10px 12px;border-radius:12px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,0.45);
+    }
+
+    .small-controls{position:absolute;right:18px;bottom:18px;display:flex;gap:8px}
+    .ctrl{background:rgba(255,255,255,0.06);padding:8px 10px;border-radius:10px;border:none;color:#fff;font-weight:700;cursor:pointer}
+
+    @media (max-width:740px){
+      .greeting{font-size:30px}
+      .scene{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="scene" role="main">
+      <div class="orb a"></div>
+      <div class="orb b"></div>
+      <!-- optional sparkles placed by script -->
+      <div class="greeting" id="greetText">Happy Birthday<br><span id="nameSpan" style="font-size:36px;color:#fff3f8"></span></div>
+      <div class="sub" id="subText">A little surprise just for you ✨</div>
+
+      <div class="click-area">
+        <button id="revealBtn" class="reveal-btn">Click Me 🎁</button>
+      </div>
+
+      <div class="videoWrap" id="videoWrap">
+        <video id="birthdayVideo" controls playsinline>
+          <source src="video.mp4" type="video/mp4">
+          Your browser doesn't support the video tag.
+        </video>
+      </div>
+
+      <div class="message-box" id="fromBox" aria-hidden="false"></div>
+      <div class="small-controls">
+        <button id="musicToggle" class="ctrl">Play music</button>
+        <button id="muteVid" class="ctrl">Mute video</button>
+      </div>
+
+      <canvas class="confetti-canvas" id="confettiCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    /* Personalize here */
+    const HER_NAME = "[Her Name]";
+    const FRIEND_NAME = "[Friend's Name]";
+    document.getElementById('nameSpan').textContent = HER_NAME;
+
+    // target moment same as index (safety check)
+    const target = new Date(2025, 9, 28, 0, 0, 0, 0); // Oct 28 2025 00:00
+
+    // disable revealBtn until target reached
+    const revealBtn = document.getElementById('revealBtn');
+    const videoWrap = document.getElementById('videoWrap');
+    const birthdayVideo = document.getElementById('birthdayVideo');
+    const fromBox = document.getElementById('fromBox');
+    const musicToggle = document.getElementById('musicToggle');
+    const muteVid = document.getElementById('muteVid');
+
+    function checkEnable(){
+      if (new Date() >= target) {
+        revealBtn.disabled = false;
+        revealBtn.textContent = "Click Me 🎁";
+      } else {
+        revealBtn.disabled = true;
+        revealBtn.textContent = "Locked until 28 Oct 2025 00:00";
+      }
+    }
+    checkEnable();
+    setInterval(checkEnable, 1000);
+
+    // cute floating sparkles (decor)
+    (function spawnSparks(){
+      const scene = document.querySelector('.scene');
+      for (let i=0;i<10;i++){
+        const s = document.createElement('div');
+        s.className = 'spark';
+        s.style.left = (10 + Math.random()*80) + '%';
+        s.style.top = (10 + Math.random()*70) + '%';
+        s.style.opacity = 0.6 + Math.random()*0.6;
+        s.style.transform = `scale(${0.5 + Math.random()*1.4})`;
+        scene.appendChild(s);
+      }
+    })();
+
+    // background music (optional). Place bg-music.mp3 in same folder if you want.
+    let bgAudio = new Audio();
+    bgAudio.loop = true;
+    // bgAudio.src = "bg-music.mp3"; // uncomment & add your bg music file if desired
+
+    musicToggle.addEventListener('click', () => {
+      if (!bgAudio.src){ // no music file specified
+        musicToggle.textContent = "No music file";
+        musicToggle.disabled = true;
+        return;
+      }
+      if (bgAudio.paused) {
+        bgAudio.play().catch(()=>{});
+        musicToggle.textContent = "Pause music";
+      } else {
+        bgAudio.pause();
+        musicToggle.textContent = "Play music";
+      }
+    });
+
+    muteVid.addEventListener('click', () => {
+      birthdayVideo.muted = !birthdayVideo.muted;
+      muteVid.textContent = birthdayVideo.muted ? "Unmute video" : "Mute video";
+    });
+
+    // reveal sequence: animate greeting, then show secondary click which reveals video
+    revealBtn.addEventListener('click', () => {
+      // small cool bounce
+      revealBtn.disabled = true;
+      revealBtn.style.transform = "scale(.98)";
+      // animate greeting for emphasis
+      const greet = document.getElementById('greetText');
+      greet.style.transition = "transform .6s ease";
+      greet.style.transform = "scale(1.06)";
+      setTimeout(()=>{ greet.style.transform = "scale(1)"; }, 700);
+
+      // show an intermediate animated message and the final Click to Play button
+      showPlayPrompt();
+    });
+
+    function showPlayPrompt(){
+      // replace reveal button with a "Play the video" button (animated)
+      const area = document.querySelector('.click-area');
+      area.innerHTML = `<button id="playNow" class="reveal-btn">Open your gift 🎬</button>`;
+      const playNow = document.getElementById('playNow');
+
+      // small entrance animation
+      playNow.animate([{transform:'translateY(14px)', opacity:0},{transform:'translateY(0)',opacity:1}],{duration:420,easing:'cubic-bezier(.2,.9,.2,1)'});
+
+      playNow.addEventListener('click', () => {
+        // reveal video container, play video, confetti, and show from message
+        videoWrap.style.display = 'flex';
+        // scroll into view on small screens
+        videoWrap.scrollIntoView({behavior:'smooth',block:'center'});
+        birthdayVideo.currentTime = 0;
+        birthdayVideo.muted = false;
+        birthdayVideo.play().catch(()=>{});
+        launchConfetti(1400);
+        fromBox.textContent = `With love, ${FRIEND_NAME} ❤️`;
+        // remove the play button to
