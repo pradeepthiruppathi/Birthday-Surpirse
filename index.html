@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Surprise Countdown 🎁</title>
+  <title>🎁 Surprise Countdown</title>
   <style>
     * {
       margin: 0;
@@ -25,7 +25,7 @@
     /* Floating hearts animation */
     .heart {
       position: absolute;
-      color: rgba(255, 255, 255, 0.6);
+      color: rgba(255, 255, 255, 0.7);
       font-size: 22px;
       animation: floatUp 6s linear infinite;
     }
@@ -42,15 +42,16 @@
     }
 
     h1 {
-      font-size: 2.5rem;
+      font-size: 2.8rem;
       color: #fff;
-      margin-bottom: 1.5rem;
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+      margin-bottom: 2rem;
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
       text-align: center;
+      padding: 0 10px;
     }
 
     .countdown-box {
-      background: rgba(255, 255, 255, 0.25);
+      background: rgba(255, 255, 255, 0.2);
       border-radius: 20px;
       padding: 2rem 3rem;
       box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
@@ -64,6 +65,7 @@
       color: #fff;
       font-weight: 600;
       margin-top: 0.5rem;
+      letter-spacing: 1px;
     }
 
     button {
@@ -143,7 +145,7 @@
       position: fixed;
       bottom: 20px;
       left: 20px;
-      background: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.6);
       color: #ff0077;
       border: none;
       border-radius: 10px;
@@ -151,10 +153,12 @@
       cursor: pointer;
       font-size: 0.9rem;
       z-index: 20;
+      backdrop-filter: blur(5px);
     }
   </style>
 </head>
 <body>
+  <!-- Start Overlay -->
   <div id="startOverlay">
     <h2>Tap to Start the Magic 💖</h2>
     <button id="startBtn">Start 🎶</button>
@@ -183,9 +187,12 @@
     const startBtn = document.getElementById("startBtn");
     const testModeBtn = document.getElementById("testModeBtn");
 
-    // Wait for user to start
     startBtn.addEventListener("click", () => {
-      bgm.play().catch(() => {});
+      bgm.currentTime = 0;
+      bgm.volume = 0.6;
+      bgm.play().then(() => {
+        console.log("🎵 Music started");
+      }).catch(err => console.warn("Music blocked:", err));
       overlay.style.display = "none";
     });
 
@@ -201,7 +208,6 @@
       document.body.appendChild(heart);
     }
 
-    // Countdown Logic
     const targetDate = new Date("October 28, 2025 00:00:00").getTime();
     const countdownEl = document.getElementById("countdown");
     const revealButton = document.getElementById("revealButton");
@@ -224,7 +230,6 @@
       }
     }, 1000);
 
-    // Unlock Function
     function unlockSurprise() {
       countdownEl.innerHTML = "🎉 It's Time! 🎉";
       bgm.pause();
@@ -235,7 +240,7 @@
       });
     }
 
-    // Test Mode Button (instant unlock)
+    // TEST MODE: Skip countdown instantly
     testModeBtn.addEventListener("click", () => {
       unlockSurprise();
       alert("✅ Test Mode Activated: Surprise Unlocked!");
