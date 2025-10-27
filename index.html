@@ -62,7 +62,6 @@
       100% { opacity: 1; transform: translateY(0); }
     }
 
-    /* Floating hearts */
     .heart {
       position: absolute;
       color: rgba(255,255,255,0.8);
@@ -74,7 +73,6 @@
       100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
     }
 
-    /* Overlay for start button */
     #startOverlay {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -102,7 +100,6 @@
       background: #ff85c2;
     }
 
-    /* Test button */
     #testBtn {
       position: fixed;
       bottom: 15px;
@@ -123,18 +120,9 @@
   <div id="countdown">Loading...</div>
   <button id="unlockButton" disabled>Click Me 💝</button>
 
-  <!-- Hidden YouTube Player -->
-  <iframe
-    id="ytplayer"
-    width="0"
-    height="0"
-    src=""
-    frameborder="0"
-    allow="autoplay; encrypted-media"
-    allowfullscreen
-  ></iframe>
+  <!-- Hidden Audio -->
+  <audio id="bgm" src="bgm.mp3" loop></audio>
 
-  <!-- Overlay -->
   <div id="startOverlay">
     <h2>Tap to Start the Magic 💖</h2>
     <button id="startBtn">Start 🎶</button>
@@ -158,6 +146,7 @@
 
     const countdown = document.getElementById('countdown');
     const unlockButton = document.getElementById('unlockButton');
+    const bgm = document.getElementById('bgm');
     const targetDate = new Date("October 28, 2025 00:00:00").getTime();
 
     function updateCountdown() {
@@ -167,7 +156,6 @@
         countdown.textContent = "🎉 It's Time! 🎉";
         unlockButton.disabled = false;
         unlockButton.classList.add("enabled");
-        unlockButton.style.cursor = "pointer";
       } else {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -179,25 +167,28 @@
     setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    // Start overlay
+    // Start overlay and music
     const overlay = document.getElementById("startOverlay");
     const startBtn = document.getElementById("startBtn");
-    const ytPlayer = document.getElementById("ytplayer");
 
     startBtn.addEventListener("click", () => {
-      const videoId = "zvD2kGBgDCc";
-      ytPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0`;
+      bgm.volume = 0.6;
+      bgm.currentTime = 0;
+      bgm.play()
+        .then(() => console.log("🎵 Music started"))
+        .catch(err => console.warn("Audio play blocked:", err));
       overlay.style.display = "none";
     });
 
-    // Unlock button logic
+    // Unlock button
     unlockButton.addEventListener("click", () => {
       if (!unlockButton.disabled) {
+        bgm.pause();
         window.location.href = "video.html";
       }
     });
 
-    // Test button (for previewing everything)
+    // Test unlock
     document.getElementById("testBtn").addEventListener("click", () => {
       countdown.textContent = "🎉 It's Time! 🎉";
       unlockButton.disabled = false;
