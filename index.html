@@ -3,247 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎁 Surprise Countdown</title>
+  <title>Birthday Surprise 💖</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
-
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
     body {
-      height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      background: radial-gradient(circle at top left, #ffd6e0, #ff9eb5, #ffc0cb);
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #ffb6c1, #ffe4e1);
       overflow: hidden;
-    }
-
-    /* Floating hearts animation */
-    .heart {
-      position: absolute;
-      color: rgba(255, 255, 255, 0.7);
-      font-size: 22px;
-      animation: floatUp 6s linear infinite;
-    }
-
-    @keyframes floatUp {
-      from {
-        transform: translateY(100vh) scale(0.8);
-        opacity: 0.5;
-      }
-      to {
-        transform: translateY(-10vh) scale(1.4);
-        opacity: 0;
-      }
+      color: #fff;
+      text-align: center;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
     }
 
     h1 {
-      font-size: 2.8rem;
-      color: #fff;
-      margin-bottom: 2rem;
-      text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
-      text-align: center;
-      padding: 0 10px;
+      font-size: 3rem;
+      margin-bottom: 10px;
+      animation: fadeInDown 2s ease-in-out;
     }
 
-    .countdown-box {
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 20px;
-      padding: 2rem 3rem;
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
-      text-align: center;
-      margin-bottom: 3rem;
-      backdrop-filter: blur(8px);
-    }
-
-    .countdown {
+    #countdown {
       font-size: 2rem;
-      color: #fff;
-      font-weight: 600;
-      margin-top: 0.5rem;
-      letter-spacing: 1px;
+      margin-top: 10px;
+      margin-bottom: 30px;
     }
 
-    button {
+    #unlockButton {
       font-size: 1.2rem;
-      background: #fff;
-      color: #ff4e88;
+      padding: 12px 30px;
       border: none;
-      border-radius: 50px;
-      padding: 1rem 3rem;
+      border-radius: 30px;
+      background-color: #ff69b4;
+      color: white;
       cursor: not-allowed;
-      opacity: 0.7;
+      opacity: 0.6;
       transition: all 0.3s ease;
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.4);
     }
 
-    button.enabled {
+    #unlockButton.enabled {
       cursor: pointer;
       opacity: 1;
-      background: linear-gradient(90deg, #ff7ba9, #ff4e88);
-      color: #fff;
-      animation: glow 1.5s ease-in-out infinite alternate;
+      animation: pulse 1.5s infinite;
     }
 
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 10px #ff7ba9, 0 0 20px #ff4e88;
-      }
-      to {
-        box-shadow: 0 0 25px #ff7ba9, 0 0 45px #ff4e88;
-      }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,105,180, 0.6); }
+      70% { box-shadow: 0 0 0 20px rgba(255,105,180, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,105,180, 0); }
     }
 
-    footer {
+    @keyframes fadeInDown {
+      0% { opacity: 0; transform: translateY(-30px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Floating hearts */
+    .heart {
       position: absolute;
-      bottom: 20px;
+      color: rgba(255,255,255,0.8);
+      animation: floatUp 8s linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+    }
+
+    /* Overlay for start button */
+    #startOverlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+      flex-direction: column;
+    }
+
+    #startBtn {
+      background: #ff69b4;
+      border: none;
+      padding: 15px 40px;
+      font-size: 1.3rem;
+      border-radius: 40px;
       color: #fff;
+      cursor: pointer;
+      transition: 0.3s;
+      animation: pulse 1.5s infinite;
+    }
+
+    #startBtn:hover {
+      background: #ff85c2;
+    }
+
+    /* Test button */
+    #testBtn {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      background: #444;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 20px;
+      cursor: pointer;
       font-size: 0.9rem;
       opacity: 0.8;
     }
-
-    /* Start overlay */
-    #startOverlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(255, 182, 193, 0.9);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      text-align: center;
-    }
-
-    #startOverlay h2 {
-      color: #fff;
-      font-size: 2rem;
-      text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
-      margin-bottom: 1rem;
-    }
-
-    #startOverlay button {
-      background: linear-gradient(90deg, #ff7ba9, #ff4e88);
-      color: white;
-      border: none;
-      border-radius: 50px;
-      padding: 0.8rem 2rem;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-    }
-
-    /* Developer test button */
-    #testModeBtn {
-      position: fixed;
-      bottom: 20px;
-      left: 20px;
-      background: rgba(255, 255, 255, 0.6);
-      color: #ff0077;
-      border: none;
-      border-radius: 10px;
-      padding: 6px 12px;
-      cursor: pointer;
-      font-size: 0.9rem;
-      z-index: 20;
-      backdrop-filter: blur(5px);
-    }
+    #testBtn:hover { opacity: 1; }
   </style>
 </head>
 <body>
-  <!-- Start Overlay -->
+  <h1>Countdown to Her Special Moment 💫</h1>
+  <div id="countdown">Loading...</div>
+  <button id="unlockButton" disabled>Click Me 💝</button>
+
+  <!-- Hidden YouTube Player -->
+  <iframe
+    id="ytplayer"
+    width="0"
+    height="0"
+    src=""
+    frameborder="0"
+    allow="autoplay; encrypted-media"
+    allowfullscreen
+  ></iframe>
+
+  <!-- Overlay -->
   <div id="startOverlay">
     <h2>Tap to Start the Magic 💖</h2>
     <button id="startBtn">Start 🎶</button>
   </div>
 
-  <h1>🎂 A Special Surprise Awaits You 💖</h1>
-
-  <div class="countdown-box">
-    <p>The magic begins in:</p>
-    <div class="countdown" id="countdown">00d 00h 00m 00s</div>
-  </div>
-
-  <button id="revealButton" disabled>Click Me 💝</button>
-
-  <footer>Made with 💕 by Your Secret Well-Wisher</footer>
-
-  <!-- Temporary Test Button -->
-  <button id="testModeBtn">🔧 Test Mode</button>
-
-  <!-- Background Music -->
-  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <button id="testBtn">Test Unlock 🔓</button>
 
   <script>
-    const bgm = document.getElementById("bgm");
+    // Floating hearts
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.classList.add('heart');
+      heart.textContent = '💖';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = 5 + Math.random() * 5 + 's';
+      heart.style.fontSize = 20 + Math.random() * 20 + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 8000);
+    }
+    setInterval(createHeart, 500);
+
+    const countdown = document.getElementById('countdown');
+    const unlockButton = document.getElementById('unlockButton');
+    const targetDate = new Date("October 28, 2025 00:00:00").getTime();
+
+    function updateCountdown() {
+      const now = new Date().getTime();
+      const diff = targetDate - now;
+      if (diff <= 0) {
+        countdown.textContent = "🎉 It's Time! 🎉";
+        unlockButton.disabled = false;
+        unlockButton.classList.add("enabled");
+        unlockButton.style.cursor = "pointer";
+      } else {
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        countdown.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // Start overlay
     const overlay = document.getElementById("startOverlay");
     const startBtn = document.getElementById("startBtn");
-    const testModeBtn = document.getElementById("testModeBtn");
+    const ytPlayer = document.getElementById("ytplayer");
 
     startBtn.addEventListener("click", () => {
-      bgm.currentTime = 0;
-      bgm.volume = 0.6;
-      bgm.play().then(() => {
-        console.log("🎵 Music started");
-      }).catch(err => console.warn("Music blocked:", err));
+      const videoId = "zvD2kGBgDCc";
+      ytPlayer.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&loop=1&playlist=${videoId}&controls=0`;
       overlay.style.display = "none";
     });
 
-    // Floating hearts
-    const heartCount = 15;
-    for (let i = 0; i < heartCount; i++) {
-      const heart = document.createElement("div");
-      heart.classList.add("heart");
-      heart.innerHTML = "💖";
-      heart.style.left = Math.random() * 100 + "vw";
-      heart.style.animationDelay = Math.random() * 5 + "s";
-      heart.style.fontSize = Math.random() * 20 + 15 + "px";
-      document.body.appendChild(heart);
-    }
-
-    const targetDate = new Date("October 28, 2025 00:00:00").getTime();
-    const countdownEl = document.getElementById("countdown");
-    const revealButton = document.getElementById("revealButton");
-
-    const interval = setInterval(() => {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-
-      if (distance <= 0) {
-        clearInterval(interval);
-        unlockSurprise();
-      } else {
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor(
-          (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
-        );
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-        countdownEl.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-      }
-    }, 1000);
-
-    function unlockSurprise() {
-      countdownEl.innerHTML = "🎉 It's Time! 🎉";
-      bgm.pause();
-      revealButton.disabled = false;
-      revealButton.classList.add("enabled");
-      revealButton.addEventListener("click", () => {
+    // Unlock button logic
+    unlockButton.addEventListener("click", () => {
+      if (!unlockButton.disabled) {
         window.location.href = "video.html";
-      });
-    }
+      }
+    });
 
-    // TEST MODE: Skip countdown instantly
-    testModeBtn.addEventListener("click", () => {
-      unlockSurprise();
-      alert("✅ Test Mode Activated: Surprise Unlocked!");
+    // Test button (for previewing everything)
+    document.getElementById("testBtn").addEventListener("click", () => {
+      countdown.textContent = "🎉 It's Time! 🎉";
+      unlockButton.disabled = false;
+      unlockButton.classList.add("enabled");
     });
   </script>
 </body>
